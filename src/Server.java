@@ -1,30 +1,38 @@
-import java.io.*;
-import java.net.*;
-import java.security.KeyStore;
-import javax.net.*;
+import javax.net.ServerSocketFactory;
 import javax.net.ssl.*;
 import javax.security.cert.X509Certificate;
+import java.io.*;
+import java.net.ServerSocket;
+import java.security.KeyStore;
 
 public class Server implements Runnable {
+
     private ServerSocket serverSocket = null;
     private static int numConnectedClients = 0;
+    private Authenticator auth;
 
     public Server(ServerSocket ss) throws IOException {
         serverSocket = ss;
         newListener();
+        try {
+            auth = new Authenticator();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void run() {
+
         try {
-            SSLSocket socket=(SSLSocket)serverSocket.accept();
+            SSLSocket socket = (SSLSocket) serverSocket.accept();
             newListener();
             SSLSession session = socket.getSession();
-            X509Certificate cert = (X509Certificate)session.getPeerCertificateChain()[0];
+            X509Certificate cert = (X509Certificate) session.getPeerCertificateChain()[0];
             System.out.println("Length of chain ------" + session.getPeerCertificateChain().length);
             String subject = cert.getSubjectDN().getName();
             String issurr = cert.getIssuerDN().getName();
             System.out.println("Subject name " + session.getPeerCertificateChain()[1].getSubjectDN());
-    	    numConnectedClients++;
+            numConnectedClients++;
             System.out.println("client connected");
             System.out.println("client name (cert subject DN field): " + subject);
             System.out.println("issuer name (cert issuer DN field): " + issurr);
@@ -38,31 +46,38 @@ public class Server implements Runnable {
 
             String clientMsg = null;
             while ((clientMsg = in.readLine()) != null) {
-			    String rev = new StringBuilder(clientMsg).reverse().toString();
-                System.out.println("received '" + clientMsg + "' from client");
-                System.out.print("sending '" + rev + "' to client...");
-				out.println(rev);
-				out.flush();
-                System.out.println("done\n");
-			}
-			in.close();
-			out.close();
-			socket.close();
-    	    numConnectedClients--;
+                String[] arguments = RequestParser.parseLine(clientMsg);
+                //TODO: Get user data from Clientside corretly.
+                StringBuilder sb = RequestParser.arrayToString(auth.authenticate(Privileges.fromInteger(Integer.parseInt(arguments[0])),
+                        new Doctor("doctorAlban", "Csk"), arguments[1]));
+                System.out.println(sb.toString());
+                out.print(sb.toString());
+
+//               }
+                out.flush();
+//
+            }
+            in.close();
+            out.close();
+            socket.close();
+            numConnectedClients--;
             System.out.println("client disconnected");
             System.out.println(numConnectedClients + " concurrent connection(s)\n");
-		} catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("Client died: " + e.getMessage());
             e.printStackTrace();
             return;
         }
     }
 
-    private void newListener() { (new Thread(this)).start(); } // calls run()
+    private void newListener() {
+        (new Thread(this)).start();
+    } // calls run()
 
     public static void main(String args[]) {
-//    	args = new String [1];
+//      args = new String [1];
 //    	args[0] = "9876";
+
         System.out.println("\nServer Started\n");
         int port = -1;
         if (args.length >= 1) {
@@ -70,15 +85,17 @@ public class Server implements Runnable {
         }
         String type = "TLS";
         try {
+
             ServerSocketFactory ssf = getServerSocketFactory(type);
             ServerSocket ss = ssf.createServerSocket(port);
-            ((SSLServerSocket)ss).setNeedClientAuth(true); // enables client authentication
+            ((SSLServerSocket) ss).setNeedClientAuth(true); // enables client authentication
             new Server(ss);
         } catch (IOException e) {
             System.out.println("Unable to start Server: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
 
     private static ServerSocketFactory getServerSocketFactory(String type) {
         if (type.equals("TLS")) {
@@ -88,7 +105,7 @@ public class Server implements Runnable {
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
                 TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
                 KeyStore ks = KeyStore.getInstance("JKS");
-				KeyStore ts = KeyStore.getInstance("JKS");
+                KeyStore ts = KeyStore.getInstance("JKS");
                 char[] password = "password".toCharArray();
 
                 ks.load(new FileInputStream("serverkeystore"), password);  // keystore password (storepass)
