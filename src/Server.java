@@ -5,11 +5,11 @@ import javax.net.*;
 import javax.net.ssl.*;
 import javax.security.cert.X509Certificate;
 
-public class server implements Runnable {
+public class Server implements Runnable {
     private ServerSocket serverSocket = null;
     private static int numConnectedClients = 0;
 
-    public server(ServerSocket ss) throws IOException {
+    public Server(ServerSocket ss) throws IOException {
         serverSocket = ss;
         newListener();
     }
@@ -73,7 +73,7 @@ public class server implements Runnable {
             ServerSocketFactory ssf = getServerSocketFactory(type);
             ServerSocket ss = ssf.createServerSocket(port);
             ((SSLServerSocket)ss).setNeedClientAuth(true); // enables client authentication
-            new server(ss);
+            new Server(ss);
         } catch (IOException e) {
             System.out.println("Unable to start Server: " + e.getMessage());
             e.printStackTrace();
