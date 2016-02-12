@@ -48,7 +48,7 @@ public class Server implements Runnable {
             while ((clientMsg = in.readLine()) != null) {
                 String[] arguments = RequestParser.parseLine(clientMsg);
                 //TODO: Get user data from Clientside corretly.
-                StringBuilder sb = RequestParser.arrayToString(auth.authenticate(Privileges.fromInteger(Integer.parseInt(arguments[0])),
+                StringBuilder sb = RequestParser.arrayToString(auth.authenticateAndRetrieveData(Privileges.fromInteger(Integer.parseInt(arguments[0])),
                         new Doctor("doctorAlban", "Csk"), arguments[1]));
                 System.out.println(sb.toString());
                 out.print(sb.toString());

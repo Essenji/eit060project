@@ -28,8 +28,16 @@ public class Authenticator {
         return new Journal(patient, doctor, nurse, division, new File(filename));
     }
 
+    /**
+     * This method authenticates the user and gives the corresponding data that is reuqested.
+     * The return type is a string array with the data requested.
+     * @param request
+     * @param user
+     * @param filename
+     * @return
+     */
 
-    public String[] authenticate(Privileges request, User user, String filename) {
+    public String[] authenticateAndRetrieveData(Privileges request, User user, String filename) {
 
         //TODO implement functionality for other actions
         System.out.println(journals.size());
