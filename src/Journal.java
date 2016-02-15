@@ -54,6 +54,7 @@ public class Journal {
      * @return false if the file could not be written to or file didn't exist.
      */
     public boolean writeToJournal(String s) {
+//        System.out.println("String to be written: " + s);
         try {
             PrintWriter pw = new PrintWriter(file);
             pw.println(s);
@@ -61,6 +62,7 @@ public class Journal {
         } catch (FileNotFoundException e) {
             return false;
         }
+        System.out.println("Returning true");
         return true;
     }
 
@@ -80,10 +82,7 @@ public class Journal {
     }
 
     public boolean deleteJournal() {
-        System.out.println("File : " + file + "  Path : " + file.getAbsolutePath());
-        boolean b = file.delete();
-        System.out.println(b);
-        return b;
+        return file.delete();
 
     }
 
@@ -98,7 +97,10 @@ public class Journal {
      * @throws FileNotFoundException
      */
     public String getData() throws FileNotFoundException {
-        return new Scanner(file).useDelimiter("\\A").next();
+        Scanner scan = new Scanner(file);
+        String s = scan.useDelimiter("\\A").next();
+        scan.close();
+        return s;
     }
 
     @Override

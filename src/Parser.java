@@ -3,7 +3,7 @@ import java.io.File;
 /**
  * Created by Tank on 2/11/2016.
  */
-public class RequestParser {
+public class Parser {
     public static String[] parseLine(String filename){
 //        switch (code){
 //            case 0:
@@ -34,6 +34,21 @@ public class RequestParser {
         for (int i = 0; i < array.length; i++) {
             sb.append(array[i] + " ");
         }
+        return sb;
+    }
+
+    public static StringBuilder createFieldStructure(String[] array){
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; (i <array.length && i < Variables.FIELDS.length) ; i++) {
+            if(i < Variables.FIELDS.length-1){
+            sb.append(Variables.FIELDS[i] + " "+ array[i] + "\n");}
+            else sb.append(Variables.FIELDS[i] + " "+ array[i]);
+
+        }
+        for (int i = Variables.FIELDS.length; i < array.length; i++) {
+            sb.append(array[i]+ " ");
+        }
+//
         return sb;
     }
 //        return null;
