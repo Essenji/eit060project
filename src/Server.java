@@ -112,7 +112,7 @@ public class Server implements Runnable {
     }
 
     private String[] getResponse(String[] arguments) {
-        return auth.authenticateAndRetrieveData(Privileges.fromInteger(Integer.parseInt(arguments[0])), new Nurse("Jonas", "Csk"), arguments);
+        return auth.authenticateAndRetrieveData(Privileges.fromInteger(Integer.parseInt(arguments[0])), new Doctor("doctorAlban","Csk"), arguments);
     }
 
     private void newListener() {

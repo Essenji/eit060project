@@ -36,7 +36,6 @@ public class Parser {
         for (int i = Variables.FIELDS.length; i < array.length; i++) {
             sb.append(array[i]+ " ");
         }
-//
         return sb;
     }
     public static String formatNewLine(String[] response) {
@@ -51,7 +50,6 @@ public class Parser {
         try {
             PrintWriter pw = new PrintWriter(new File(Variables.JOURNAL_FOLDER + filedata[0]));
             StringBuilder sb = Parser.createFieldStructure(Arrays.copyOfRange(filedata, 1, filedata.length));
-            System.out.println("StringBuilder : " + sb.toString());
             pw.println(sb);
             pw.close();
             return true;
@@ -64,8 +62,7 @@ public class Parser {
 //    public static boolean
     public static Journal createJournalFromFile(String filename) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(filename));
-        System.out.println("Filename: " + filename + " Buffered: " + br);
-        String patient, doctor,nurse,division = null;
+        String patient, doctor,nurse,division;
         try {
             br.skip(Variables.FIELDS[0].length());
             patient = br.readLine().trim();
@@ -77,11 +74,9 @@ public class Parser {
             division = br.readLine().trim();
         }catch (NullPointerException e){
             br.close();
-//            System.out.println("Empty fields. Generating a basic journal");
             return null;
         }
         br.close();
-        System.out.println("Read following fields: " + patient+doctor+nurse+division);
         return new Journal(patient, doctor, nurse, division, new File(filename));
     }
 
@@ -97,7 +92,7 @@ public class Parser {
                 return new String[]{ResponseCode.Success.toString(), sb.length() + "", sb.toString()};
             }
         }
-        return new String[]{ResponseCode.Success.toString()};
+        return new String[]{ResponseCode.FileNotFound.toString()};
     }
 
 

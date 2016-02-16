@@ -18,7 +18,6 @@ public class Authenticator {
         return Parser.createJournalFromFile(filename);
     }
 
-
     private boolean createJournalFile(String[] filedata) {
         return Parser.printToFile(filedata);
     }
@@ -32,60 +31,75 @@ public class Authenticator {
     /**
      * This method authenticates the user and gives the corresponding data that is requested.
      * The return type is a string array with the data requested.
-     * @param request
-     * @param user
-     * @param filedata
-     * @return
+     *
+     * @param request the request on of enum type Priviliges
+     * @param user the user requesting to be authenticated
+     * @param filedata filedata on the format {Request, filename, data} where the data field depends on the reuqest
+     *                 according to the protocol.
+     * @return a String[] containing the outcome, depending on the protocol. The case of Read sends back all the data
+     * in the journal.
      */
     public String[] authenticateAndRetrieveData(Privileges request, User user, String[] filedata) {
-        if(!user.hasPrivilege(request)) return Failure;
-        Journal journal = null;
-        if (filedata.length > 1 ) {
-            try {
-                journal = createJournalFromFile(Variables.JOURNAL_FOLDER + filedata[1].trim());
-            } catch (IOException e) {
-                if(request == Privileges.Create && user.hasPrivilege(request)){
-                    return Parser.printToFile(Arrays.copyOfRange(filedata, 1, filedata.length))  ? Success : FileNotCreated;
-                }
-                return FileNotFound;
-            }
-        }
-        System.out.println("Now trying to create journal");
-        if(request == Privileges.Create && user.hasPrivilege(request)) {
-            System.out.println("Priviliges checked");
-
-            if(journal == null){
-                System.out.println("Journal nonexistant");
-            return (createJournalFile(Arrays.copyOfRange(filedata, 1, filedata.length))) ? Success : FileNotFound;
-            }
-            else{
-                System.out.println("Journal exists");
-                return journal.getAccess(user, request) && createJournalFile(Arrays.copyOfRange(filedata, 1, filedata.length))? Success : Failure;
-
-            }
-
-
-        }
-        if (journal == null ) { //Journal not found
-            if(user.hasPrivilege(request) && request == Privileges.List) return getJournalList();
-            return Failure;
-        }
-        if (journal.getAccess(user, request)) {
-            switch (request) {
-                case Read:
-                    return readData(journal);
-                case Write:
-                    return Parser.printToFile(Arrays.copyOfRange(filedata, 1, filedata.length))  ? Success : FileNotCreated;
-                case Delete:
-                    return journal.deleteJournal() ? Success : FileNotFound;
-
-            }
-
+        if (!user.hasPrivilege(request)) return Failure;
+        switch (request) {
+            case Write:
+                return authenticateWrite(request, user, filedata);
+            case Read:
+                return authenticateRead(request, user, filedata);
+            case Delete:
+                return authenticateDelete(request, user, filedata);
+            case Create:
+                return authenticateCreate(request, user, filedata);
+            case List:
+                return authenticateList(request, user, filedata);
         }
         return Failure;
     }
 
-    /**Concatenates the whole journal file.
+
+    private String[] authenticateWrite(Privileges request, User user, String[] filedata) {
+        Journal journal = getJournal(filedata);
+            return (journal==null) ? FileNotFound : (Parser.printToFile(Arrays.copyOfRange(filedata, 1, filedata.length)) ? Success : FileNotCreated);
+    }
+
+
+    private String[] authenticateRead(Privileges request, User user, String[] filedata) {
+        Journal journal = getJournal(filedata);
+            return (journal == null) ? FileNotFound : (journal.getAccess(user, request) ? readData(journal) : Failure);
+    }
+
+    private String[] authenticateDelete(Privileges request, User user, String[] filedata) {
+        Journal journal = getJournal(filedata);
+            return (journal == null) ? FileNotFound : (journal.deleteJournal() ? Success : FileNotFound);
+    }
+
+    private String[] authenticateCreate(Privileges request, User user, String[] filedata) {
+        Journal journal = getJournal(filedata);
+           if (journal == null)
+            return Parser.printToFile(Arrays.copyOfRange(filedata, 1, filedata.length)) ? Success : FileNotCreated;
+            return journal.getAccess(user, request) && createJournalFile(Arrays.copyOfRange(filedata, 1, filedata.length)) ? Success : Failure;
+    }
+
+    private String[] authenticateList(Privileges request, User user, String[] filedata) {
+        return getJournalList();
+
+    }
+
+    private Journal getJournal(String[] filedata) {
+        Journal journal = null;
+        if (filedata.length > 1) {
+            try {
+                journal = createJournalFromFile(Variables.JOURNAL_FOLDER + filedata[1].trim());
+            } catch (IOException e) {
+                journal = null;
+            }
+        }
+        return journal;
+    }
+
+    /**
+     * Concatenates the whole journal file.
+     *
      * @param j the Journal Object containing the File with the journal data
      * @return a String with data
      */
