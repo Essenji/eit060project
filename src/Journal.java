@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -26,46 +25,18 @@ public class Journal {
         if (!user.hasPrivilege(request)) {
             return false;
         }
-//        System.out.println("Type of doctor class : " + Doctor.class.getSimpleName());
         if (user.getUserType().equals(Doctor.class.getSimpleName())) {
-//            System.out.println("Class check passed");
-            return user.identifyUser(doctor) || user.belongsTo(division) && request.equals(Privileges.Read);
+            boolean b = user.identifyUser(doctor) || user.belongsTo(division);
+            return b;
         } else if (user.getUserType().equals(Nurse.class.getSimpleName())) {
-            return user.identifyUser(nurse) || user.belongsTo(division) && request.equals(Privileges.Read);
+            return user.identifyUser(nurse) || user.belongsTo(division);
         } else if (user.getUserType().equals(Patient.class.getSimpleName())) {
             return user.identifyUser(patient);
         } else if (user.getUserType().equals(Government.class.getSimpleName())) {
-            System.out.println("GOvernment found");
             return true;
         }
         return false;
     }
-
-    public File fileOp(User user, Privileges request) {
-        return file;
-    }
-
-    /**
-     * Writes the String s to the file of the journal. All previous information is replaced with the current data.
-     * Unlike the method appendToJournal, this method creates the file if it doesn't exist. Will enter a newline
-     * after the string s has been written to the file.
-     *
-     * @param s
-     * @return false if the file could not be written to or file didn't exist.
-     */
-    public boolean writeToJournal(String s) {
-//        System.out.println("String to be written: " + s);
-        try {
-            PrintWriter pw = new PrintWriter(file);
-            pw.println(s);
-            pw.close();
-        } catch (FileNotFoundException e) {
-            return false;
-        }
-        System.out.println("Returning true");
-        return true;
-    }
-
     /**
      * Appends the String s to the file of the journal. This does not remove previous entered information.
      *
@@ -112,8 +83,4 @@ public class Journal {
         return false;
     }
 
-//	@Override
-//	public int hashCode() {
-//		return file != null ? file.hashCode() : 0;
-//	}
 }

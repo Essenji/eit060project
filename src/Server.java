@@ -54,53 +54,18 @@ public class Server implements Runnable {
                 //TODO: Get user data from Clientside corretly.
                 //TODO: From here it is assumed that the user has been correctly verified through certificate
 //                StringBuilder sb = new StringBuilder();
-                if (request == Privileges.Write){
+                if (request == Privileges.Write ){
                     arguments[0] = Privileges.Read.toString();
                 }
                 String[] response = getResponse(arguments);
-
-                String data;
-                for (int i = 0; i < response.length; i++) {
-                    response[i] = response[i].replaceAll("\\r?\\n?\\s", " ").trim();
-                }
-                data = Parser.arrayToString(response).toString();
-//                System.out.println("The recieved response: " + data);
-
+                String data = Parser.formatNewLine(response);
                 out.println(data);
                 out.flush();
-
-                System.out.println(data);
-
                 //Should the option for Writing be chosen, the server will wait for the file data to be written
                 if (request == Privileges.Write && ResponseCode.fromInteger(Integer.parseInt(response[0] )) == ResponseCode.Success) {
-//                    System.out.println("Priviliges == write");
-                    if ((clientMsg = in.readLine()) != null) {
-//                        System.out.println("Creating new file here");
-
-                        if (ResponseCode.fromInteger(Integer.parseInt(response[0])) == ResponseCode.Success) {
-//                            System.out.println("Creating new file");
-                            String filename = arguments[1];
-//                            String length = arguments[0];
-                            arguments = Parser.parseLine(clientMsg);
-//                            arguments[0] = request.toString();
-                            List<String> list = new ArrayList<String>(Arrays.asList(arguments));
-                            list.add(1, filename);
-//                            list.add(0,arguments[1]);
-                            Object[] temp = list.toArray();
-                            String [] writeInput = new String[temp.length];
-                            for (int i = 0; i < temp.length ; i++) writeInput[i] = temp[i].toString();
-                            writeInput[0] = request.toString();
-//                            System.out.println(Arrays.toString(writeInput));
-//                            System.out.println());
-                            System.out.println("Inbefore the flush");
-                            out.println(getResponse(writeInput)[0]);
-                            out.flush();
-//                            break;
-                        }
-                    }
+//                    System.out.println("Entering second write phase.");
+                    awaitWriteResponse(out, in, arguments, request, response);
                 }
-                out.println(data);
-                out.flush();
 
             }
             in.close();
@@ -116,8 +81,38 @@ public class Server implements Runnable {
         }
     }
 
+
+
+    private void awaitWriteResponse(PrintWriter out, BufferedReader in, String[] arguments, Privileges request, String[] response) throws IOException {
+        String clientMsg;
+        if ((clientMsg = in.readLine()) != null) {
+//                        System.out.println("Creating new file here");
+
+            if (ResponseCode.fromInteger(Integer.parseInt(response[0])) == ResponseCode.Success) {
+//                            System.out.println("Creating new file");
+                String filename = arguments[1];
+//                            String length = arguments[0];
+                arguments = Parser.parseLine(clientMsg);
+//                            arguments[0] = request.toString();
+                List<String> list = new ArrayList<String>(Arrays.asList(arguments));
+                list.add(1, filename);
+//                            list.add(0,arguments[1]);
+                Object[] temp = list.toArray();
+                String [] writeInput = new String[temp.length];
+                for (int i = 0; i < temp.length ; i++) writeInput[i] = temp[i].toString();
+                writeInput[0] = request.toString();
+//                            System.out.println(Arrays.toString(writeInput));
+//                            System.out.println());
+//                System.out.println("Inbefore the flush");
+                out.println(getResponse(writeInput)[0]);
+                out.flush();
+//                            break;
+            }
+        }
+    }
+
     private String[] getResponse(String[] arguments) {
-        return auth.authenticateAndRetrieveData(Privileges.fromInteger(Integer.parseInt(arguments[0])), new Doctor("doctorAlban", "Csk"), arguments);
+        return auth.authenticateAndRetrieveData(Privileges.fromInteger(Integer.parseInt(arguments[0])), new Nurse("Jonas", "Csk"), arguments);
     }
 
     private void newListener() {
