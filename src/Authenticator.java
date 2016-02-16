@@ -6,6 +6,11 @@ import java.util.Arrays;
  */
 public class Authenticator {
 
+    public static final String[] Success = new String[]{ResponseCode.Success.toString()};
+    public static final String[] FileNotFound = new String[]{ResponseCode.FileNotFound.toString()};
+    public static final String[] FileNotCreated = new String[]{ResponseCode.FileNotCreated.toString()};
+    public static final String[] Failure = new String[]{ResponseCode.Failure.toString()};
+
     public Authenticator() throws IOException {
     }
 
@@ -33,36 +38,51 @@ public class Authenticator {
      * @return
      */
     public String[] authenticateAndRetrieveData(Privileges request, User user, String[] filedata) {
-        if(!user.hasPrivilege(request)) return new String[]{ResponseCode.Failure.toString()};
+        if(!user.hasPrivilege(request)) return Failure;
         Journal journal = null;
-        if(request == Privileges.Create && user.hasPrivilege(request)) {
-            return (createJournalFile(Arrays.copyOfRange(filedata, 1, filedata.length))) ? new String[]{ResponseCode.Success.toString()} : new String[]{ResponseCode.FileNotFound.toString()};
-
-        }
-        if (filedata.length > 1) {
+        if (filedata.length > 1 ) {
             try {
                 journal = createJournalFromFile(Variables.JOURNAL_FOLDER + filedata[1].trim());
             } catch (IOException e) {
-                return new String[]{ResponseCode.FileNotFound.toString()};
+                if(request == Privileges.Create && user.hasPrivilege(request)){
+                    return Parser.printToFile(Arrays.copyOfRange(filedata, 1, filedata.length))  ? Success : FileNotCreated;
+                }
+                return FileNotFound;
             }
+        }
+        System.out.println("Now trying to create journal");
+        if(request == Privileges.Create && user.hasPrivilege(request)) {
+            System.out.println("Priviliges checked");
+
+            if(journal == null){
+                System.out.println("Journal nonexistant");
+            return (createJournalFile(Arrays.copyOfRange(filedata, 1, filedata.length))) ? Success : FileNotFound;
+            }
+            else{
+                System.out.println("Journal exists");
+                return journal.getAccess(user, request) && createJournalFile(Arrays.copyOfRange(filedata, 1, filedata.length))? Success : Failure;
+
+            }
+
+
         }
         if (journal == null ) { //Journal not found
             if(user.hasPrivilege(request) && request == Privileges.List) return getJournalList();
-            return new String[]{ResponseCode.Failure.toString()};
+            return Failure;
         }
         if (journal.getAccess(user, request)) {
             switch (request) {
                 case Read:
                     return readData(journal);
                 case Write:
-                    return Parser.printToFile(Arrays.copyOfRange(filedata, 1, filedata.length))  ? new String[]{ResponseCode.Success.toString()} : new String[]{ResponseCode.FileNotCreated.toString()};
+                    return Parser.printToFile(Arrays.copyOfRange(filedata, 1, filedata.length))  ? Success : FileNotCreated;
                 case Delete:
-                    return journal.deleteJournal() ? new String[]{ResponseCode.Success.toString()} : new String[]{ResponseCode.FileNotFound.toString()};
+                    return journal.deleteJournal() ? Success : FileNotFound;
 
             }
 
         }
-        return new String[]{ResponseCode.Failure.toString()};
+        return Failure;
     }
 
     /**Concatenates the whole journal file.
@@ -74,7 +94,7 @@ public class Authenticator {
         try {
             data = j.getData();
         } catch (FileNotFoundException e) {
-            return new String[]{ResponseCode.FileNotFound.toString()};
+            return Authenticator.FileNotFound;
         }
         return new String[]{ResponseCode.Success.toString(), String.valueOf(j.length()), data};
     }

@@ -61,6 +61,7 @@ public class Parser {
             return false;
         }
     }
+//    public static boolean
     public static Journal createJournalFromFile(String filename) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(filename));
         System.out.println("Filename: " + filename + " Buffered: " + br);
@@ -76,8 +77,8 @@ public class Parser {
             division = br.readLine().trim();
         }catch (NullPointerException e){
             br.close();
-            System.out.println("Empty fields. Generating a basic journal");
-            return new Journal("N/A","N/A","N/A","N/A", new File(filename));
+//            System.out.println("Empty fields. Generating a basic journal");
+            return null;
         }
         br.close();
         System.out.println("Read following fields: " + patient+doctor+nurse+division);
