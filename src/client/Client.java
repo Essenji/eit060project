@@ -25,6 +25,14 @@ import javax.security.cert.X509Certificate;
  * the firewall by following SSLSocketClientWithTunneling.java.
  */
 public class Client {
+	
+	
+	private static final char SUCCESS_RETURN_VALUE = '0';
+	private static final String READ_COMMAND = "read";
+	private static final String WRITE_COMMAND = "write";
+	private static final String DELETE_COMMAND = "delete";
+	private static final String CREATE_COMMAND = "create";
+	private static final String LIST_COMMAND = "list";
 
 	public Client(String host, int port)
 	{
@@ -106,16 +114,71 @@ public class Client {
 				break;
 			}
 			
-			
-			serverWriter.println(input);
-			serverWriter.flush();
-			System.out.println("done");
+			if (input.startsWith(WRITE_COMMAND + " ")) {
+				input = "0" + input.substring(WRITE_COMMAND.length()+1); 
+				excecuteWriteCommand(input, serverReader, serverWriter);
+			} else if (input.startsWith(READ_COMMAND + " ")) {
+				input = "1" + input.substring(READ_COMMAND.length()+1); 
+				excecuteReadCommand(input, serverReader, serverWriter);
+			} else if (input.startsWith(DELETE_COMMAND + " ")) {
+				input = "2" + input.substring(DELETE_COMMAND.length()+1); 
+				excecuteDeleteCommand(input, serverReader, serverWriter);
+			} else if (input.startsWith(CREATE_COMMAND + " ")) {
+				input = "3" + input.substring(CREATE_COMMAND.length()+1); 
+				excecuteCreateCommand(input, serverReader, serverWriter);
+			} else if (input.startsWith(LIST_COMMAND + " ")) {
+				input = "4" + input.substring(LIST_COMMAND.length()+1); 
+				excecuteListCommand(input, serverReader, serverWriter);
+			} else {
+				System.out.println("Unknown command: " + input);
+			}
+		}
+	}
 	
-			System.out.println("received '" + serverReader.readLine() + "' from server\n");
+	private void excecuteWriteCommand(String input, BufferedReader serverReader,
+			PrintWriter serverWriter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void excecuteReadCommand(String input, BufferedReader serverReader,
+			PrintWriter serverWriter) throws IOException {
+		
+		serverWriter.println(input);
+		serverWriter.flush();
+
+		int answer = serverReader.read();
+		
+		if (answer == SUCCESS_RETURN_VALUE) {
+			int length = (serverReader.read() << 16) + serverReader.read();
+			char[] data = new char[length];
+			int read = 0;
+			while (read < length) {
+				read += serverReader.read(data, read, length-read);
+			}
+			String text = new String(data);
+			System.out.println(text); //TODO: maybe show in editor.
 		}
 	}
 
-	
+	private void excecuteDeleteCommand(String input, BufferedReader serverReader,
+			PrintWriter serverWriter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void excecuteCreateCommand(String input, BufferedReader serverReader,
+			PrintWriter serverWriter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void excecuteListCommand(String input, BufferedReader serverReader,
+			PrintWriter serverWriter) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	public static void main(String[] args) throws Exception 
 	{
 		String host = null;
