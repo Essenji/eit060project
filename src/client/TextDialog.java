@@ -17,6 +17,7 @@ public class TextDialog extends JDialog {
 		textArea = new JTextArea(30, 50);
 		okButton = new JButton("Done");
 		okButton.addActionListener(listener);
+		okButton.setAlignmentX(CENTER_ALIGNMENT);
 
 		textArea.setLineWrap(true);
 		
@@ -28,7 +29,8 @@ public class TextDialog extends JDialog {
 		setModalityType(ModalityType.APPLICATION_MODAL);
 	}
 	
-	public String show(String text, boolean editable) {
+	public String show(String title, String text, boolean editable) {
+		setTitle(title);
 		textArea.setText(text);
 		textArea.setEditable(editable);
 		setLocationRelativeTo(null);

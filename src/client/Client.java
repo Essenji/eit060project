@@ -145,7 +145,7 @@ public class Client {
 		ResponseCode responseCode = getResponseCode(response);
 		
 		if (responseCode == ResponseCode.Success) {
-			String editedText = textDialog.show(response.substring(2).replace('$', '\n'),true);
+			String editedText = textDialog.show("Edit journal", response.substring(2).replace('$', '\n'),true);
 			
 			serverWriter.println(editedText.replaceAll("\\r?\\n", "\\$"));
 			serverWriter.flush();
@@ -165,7 +165,7 @@ public class Client {
 		ResponseCode responseCode = getResponseCode(response);
 		
 		if (responseCode == ResponseCode.Success) {
-			textDialog.show(response.substring(2).replace('$', '\n'),false);
+			textDialog.show("Read journal", response.substring(2).replace('$', '\n'),false);
 		} else {
 			printResponseCode(responseCode);
 		}
@@ -184,8 +184,6 @@ public class Client {
 
 	private void excecuteCreateCommand(String input, BufferedReader inputReader, 
 			BufferedReader serverReader, PrintWriter serverWriter) throws IOException {
-		serverWriter.println(input);
-		serverWriter.flush();
 
 		System.out.print("Enter patient name: ");
 		String patient = inputReader.readLine();
@@ -205,13 +203,12 @@ public class Client {
 				+ "Division: " + division + "\n"
 				+ "Data: enter patient data here"; 
 		
-		String editedText = textDialog.show(text,true);
+		String editedText = textDialog.show("New journal", text,true);
 		
 		serverWriter.println(input + "$" + editedText.replaceAll("\\r?\\n", "\\$"));
 		serverWriter.flush();
 
 		String response = serverReader.readLine();
-		response = serverReader.readLine();
 		ResponseCode responseCode = getResponseCode(response);
 		
 		printResponseCode(responseCode);
