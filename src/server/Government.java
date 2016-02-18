@@ -1,3 +1,5 @@
+package server;
+import util.Privileges;
 
 public class Government extends User{
 

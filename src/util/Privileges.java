@@ -1,3 +1,4 @@
+package util;
 
 public enum Privileges {
     Write, Read, Delete, Create, List;

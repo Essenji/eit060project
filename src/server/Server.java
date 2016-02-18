@@ -1,7 +1,10 @@
+package server;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.*;
 import javax.security.cert.X509Certificate;
 
+import util.Parser;
+import util.Privileges;
 import util.ResponseCode;
 
 import java.io.*;

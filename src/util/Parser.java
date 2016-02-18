@@ -1,8 +1,15 @@
+package util;
 import java.io.*;
 import java.util.Arrays;
 import javax.security.cert.X509Certificate;
 
-import util.ResponseCode;
+import server.Doctor;
+import server.Government;
+import server.Journal;
+import server.Nurse;
+import server.Patient;
+import server.User;
+import server.Variables;
 
 /**
  * Created by Tank on 2/11/2016.

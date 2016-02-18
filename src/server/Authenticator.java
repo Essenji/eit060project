@@ -1,6 +1,9 @@
+package server;
 import java.io.*;
 import java.util.Arrays;
 
+import util.Parser;
+import util.Privileges;
 import util.ResponseCode;
 
 /**

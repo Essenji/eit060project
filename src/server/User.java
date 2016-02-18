@@ -1,3 +1,6 @@
+package server;
+import util.Privileges;
+
 public abstract class User {
     private String id;
     protected Privileges[] priv;
