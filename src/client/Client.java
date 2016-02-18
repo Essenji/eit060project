@@ -27,9 +27,6 @@ import util.ResponseCode;
  * the firewall by following SSLSocketClientWithTunneling.java.
  */
 public class Client {
-	
-	
-	private static final char SUCCESS_RETURN_VALUE = '0';
 	private static final String READ_COMMAND = "read";
 	private static final String WRITE_COMMAND = "write";
 	private static final String DELETE_COMMAND = "delete";
@@ -138,14 +135,25 @@ public class Client {
 	}
 	
 	private void excecuteWriteCommand(String input, BufferedReader serverReader,
-			PrintWriter serverWriter) {
-		// TODO Auto-generated method stub
+			PrintWriter serverWriter) throws IOException {
+		serverWriter.println(input);
+		serverWriter.flush();
+
+		String response = serverReader.readLine();
+		
+		ResponseCode responseCode = ResponseCode.fromInteger(Integer.parseInt(response.substring(0, 1)));
+		
+		if (responseCode == ResponseCode.Success) {
+			System.out.println(response.substring(2).replace('$', '\n'));
+			serverWriter.println(response.substring(2) + "\\(^-^)/");
+		} else {
+			printErrorCode(responseCode);
+		}
 		
 	}
 
 	private void excecuteReadCommand(String input, BufferedReader serverReader,
 			PrintWriter serverWriter) throws IOException {
-		
 		serverWriter.println(input);
 		serverWriter.flush();
 

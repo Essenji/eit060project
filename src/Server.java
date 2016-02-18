@@ -90,33 +90,26 @@ public class Server implements Runnable {
     private void awaitWriteResponse(PrintWriter out, BufferedReader in, String[] arguments, Privileges request, String[] response) throws IOException {
         String clientMsg;
         if ((clientMsg = in.readLine()) != null) {
-//                        System.out.println("Creating new file here");
+            System.out.println("Msg: " + clientMsg);
 
             if (ResponseCode.fromInteger(Integer.parseInt(response[0])) == ResponseCode.Success) {
-//                            System.out.println("Creating new file");
-                String filename = arguments[1];
-//                            String length = arguments[0];
-                arguments = Parser.parseLine(clientMsg);
-//                            arguments[0] = request.toString();
-                List<String> list = new ArrayList<String>(Arrays.asList(arguments));
-                list.add(1, filename);
-//                            list.add(0,arguments[1]);
-                Object[] temp = list.toArray();
-                String [] writeInput = new String[temp.length];
-                for (int i = 0; i < temp.length ; i++) writeInput[i] = temp[i].toString();
-                writeInput[0] = request.toString();
-//                            System.out.println(Arrays.toString(writeInput));
-//                            System.out.println());
-//                System.out.println("Inbefore the flush");
-                out.println(getResponse(writeInput)[0]);
-                out.flush();
-//                            break;
+            	String filename = arguments[1];
+            	arguments = Parser.parseLine(clientMsg);
+            	List<String> list = new ArrayList<String>(Arrays.asList(arguments));
+            	list.add(0, filename);
+            	list.add(0, request.toString());
+            	Object[] temp = list.toArray();
+            	String [] writeInput = new String[temp.length];
+            	for (int i = 0; i < temp.length ; i++) writeInput[i] = temp[i].toString();
+            	out.println(getResponse(writeInput)[0]);
+            	out.flush();
+            	//                            break;
             }
         }
     }
 
     private String[] getResponse(String[] arguments) {
-        return auth.authenticateAndRetrieveData(Privileges.fromInteger(Integer.parseInt(arguments[0])), new Doctor("doctorAlban","Csk"), arguments);
+        return auth.authenticateAndRetrieveData(Privileges.fromInteger(Integer.parseInt(arguments[0])), new Doctor("Doctor 1 (12345678-1234)","Division1"), arguments);
     }
 
     private void newListener() {
