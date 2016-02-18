@@ -90,8 +90,8 @@ public class Parser {
     public static boolean printToFile(String[] filedata) {
         try {
             PrintWriter pw = new PrintWriter(new File(Variables.JOURNAL_FOLDER + filedata[0]));
-            StringBuilder sb = Parser.createFieldStructure(Arrays.copyOfRange(filedata, 1, filedata.length));
-            pw.println(sb);
+//            StringBuilder sb = Parser.createFieldStructure(Arrays.copyOfRange(filedata, 1, filedata.length));
+            pw.println(filedata[1]);
             pw.close();
             return true;
         } catch (FileNotFoundException e) {

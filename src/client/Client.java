@@ -28,7 +28,7 @@ import util.ResponseCode;
  */
 public class Client {
 	private static final String READ_COMMAND = "read";
-	private static final String WRITE_COMMAND = "write";
+	private static final String EDIT_COMMAND = "edit";
 	private static final String DELETE_COMMAND = "delete";
 	private static final String CREATE_COMMAND = "create";
 	private static final String LIST_COMMAND = "list";
@@ -106,7 +106,6 @@ public class Client {
 
 	private void communicate(BufferedReader inputReader, PrintWriter serverWriter,
 			BufferedReader serverReader) throws IOException {
-		//TODO
 		String input;
 		while (true) {
 			System.out.print(">");
@@ -116,9 +115,9 @@ public class Client {
 				break;
 			}
 			
-			if (input.startsWith(WRITE_COMMAND + " ")) {
-				input = "0$" + input.substring(WRITE_COMMAND.length()+1); 
-				excecuteWriteCommand(input, serverReader, serverWriter);
+			if (input.startsWith(EDIT_COMMAND + " ")) {
+				input = "0$" + input.substring(EDIT_COMMAND.length()+1); 
+				excecuteEditCommand(input, serverReader, serverWriter);
 			} else if (input.startsWith(READ_COMMAND + " ")) {
 				input = "1$" + input.substring(READ_COMMAND.length()+1); 
 				excecuteReadCommand(input, serverReader, serverWriter);
@@ -127,7 +126,7 @@ public class Client {
 				excecuteDeleteCommand(input, serverReader, serverWriter);
 			} else if (input.startsWith(CREATE_COMMAND + " ")) {
 				input = "3$" + input.substring(CREATE_COMMAND.length()+1); 
-				excecuteCreateCommand(input, serverReader, serverWriter);
+				excecuteCreateCommand(input, inputReader, serverReader, serverWriter);
 			} else if (input.startsWith(LIST_COMMAND + " ")) {
 				input = "4$" + input.substring(LIST_COMMAND.length()+1); 
 				excecuteListCommand(input, serverReader, serverWriter);
@@ -137,7 +136,7 @@ public class Client {
 		}
 	}
 	
-	private void excecuteWriteCommand(String input, BufferedReader serverReader,
+	private void excecuteEditCommand(String input, BufferedReader serverReader,
 			PrintWriter serverWriter) throws IOException {
 		serverWriter.println(input);
 		serverWriter.flush();
@@ -172,27 +171,57 @@ public class Client {
 		}
 	}
 
-	private ResponseCode getResponseCode(String response) {
-		ResponseCode responseCode = ResponseCode.fromInteger(Integer.parseInt(response.substring(0, 1)));
-		return responseCode;
-	}
-
 	private void excecuteDeleteCommand(String input, BufferedReader serverReader,
-			PrintWriter serverWriter) {
-		// TODO Auto-generated method stub
+			PrintWriter serverWriter) throws IOException {
+		serverWriter.println(input);
+		serverWriter.flush();
+
+		String response = serverReader.readLine();
+		ResponseCode responseCode = getResponseCode(response);
 		
+		printResponseCode(responseCode);
 	}
 
-	private void excecuteCreateCommand(String input, BufferedReader serverReader,
-			PrintWriter serverWriter) {
-		// TODO Auto-generated method stub
+	private void excecuteCreateCommand(String input, BufferedReader inputReader, 
+			BufferedReader serverReader, PrintWriter serverWriter) throws IOException {
+		serverWriter.println(input);
+		serverWriter.flush();
+
+		System.out.print("Enter patient name: ");
+		String patient = inputReader.readLine();
+		System.out.print("Enter doctor name: ");
+		String doctor = inputReader.readLine();
+		System.out.print("Enter nurse name: ");
+		String nurse = inputReader.readLine();
+		System.out.print("Enter division name: ");
+		String division = inputReader.readLine();
 		
+		String text = "Patient: " + patient + "\n"
+				+ "Doctor: " + doctor + "\n"
+				+ "Nurse: " + nurse + "\n"
+				+ "Division: " + division + "\n"
+				+ "Data: enter patient data here"; 
+		
+		String editedText = textDialog.show(text,true);
+		
+		serverWriter.println(input + patient + "$" + editedText.replaceAll("\\r?\\n", "\\$"));
+		serverWriter.flush();
+
+		String response = serverReader.readLine();
+		ResponseCode responseCode = getResponseCode(response);
+		
+		printResponseCode(responseCode);
 	}
 
 	private void excecuteListCommand(String input, BufferedReader serverReader,
 			PrintWriter serverWriter) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	private ResponseCode getResponseCode(String response) {
+		ResponseCode responseCode = ResponseCode.fromInteger(Integer.parseInt(response.substring(0, 1)));
+		return responseCode;
 	}
 
 	private void printResponseCode(ResponseCode responseCode) {
