@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 public class TextDialog extends JDialog {
@@ -13,12 +14,14 @@ public class TextDialog extends JDialog {
 	private JButton okButton;
 	
 	public TextDialog() {
-		textArea = new JTextArea(30, 60);
+		textArea = new JTextArea(30, 50);
 		okButton = new JButton("Done");
 		okButton.addActionListener(listener);
 
+		textArea.setLineWrap(true);
+		
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-		getContentPane().add(textArea);
+		getContentPane().add(new JScrollPane(textArea,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
 		getContentPane().add(okButton);
 		pack();
 		
