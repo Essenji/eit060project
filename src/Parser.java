@@ -50,19 +50,42 @@ public class Parser {
         return data;
     }
     
-//    public static User generateUserFromCert(X509Certificate cert){
-//    	User user;
-//    	String name = cert.getSubjectDN().getName();
-//    	cert.
-//    	switch (cert.getIssuerDN().getName()){
-//    		case "Doctors":
-////    			user = new Doctor(name, )
-//    		case "Nurses":
-//    		case "Government":
-//    		case "Patients":
-//    	}
+    public static User generateUserFromCert(X509Certificate cert){
+    	User user = null;
+    	String certFields = cert.getSubjectDN().getName();
+    	String name = certFields.substring(certFields.indexOf("CN=")+3, certFields.indexOf(','));
+    	String issuerFields = cert.getIssuerDN().getName();
+    	String issuerType = issuerFields.substring(issuerFields.indexOf("CN=")+3, issuerFields.indexOf(','));
+//    	System.out.println("This is the registered issuertype: " + issuerType);
+    	switch (issuerType){
+    		case "Doctors":
+			String division = extractDivision(certFields);
+//    			System.out.println("This is a Doctor! " + " Name: " + name + " Division: " + division );
+    			user = new Doctor(name, division);
+    			break;
+    		case "Nurses":
+			String divisionNurse = extractDivision(certFields);
+//    			System.out.println("This is a Nurse! " + " Name: " + name + " Division: " + divisionNurse );
+    			user = new Nurse(name, divisionNurse);
+    			break;
+    		case "Government":
+//    			System.out.println("This is a Gov! " + " Name: " + name);
+    			user = new Government(name);
+    			break;
+    		case "Patients":
+//    			System.out.println("This is a Noob! " + " Name: " + name);
+    			user = new Patient(name);
+    			break;
+    	}
+    	return user;
     	
-//    }
+    }
+
+	private static String extractDivision(String certFields) {
+		String divToEnd = certFields.substring(certFields.lastIndexOf("OU=")+3, certFields.length());
+		String division = divToEnd.substring(0, (divToEnd.indexOf(',') == -1)? divToEnd.length(): divToEnd.indexOf(','));
+		return division;
+	}
     
     public static boolean printToFile(String[] filedata) {
         try {

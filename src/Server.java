@@ -61,14 +61,16 @@ public class Server implements Runnable {
                 if (request == Privileges.Write ){
                     arguments[0] = Privileges.Read.toString();
                 }
-                String[] response = getResponse(arguments);
+                String[] response = getResponse(arguments, cert);
+                
+                
                 String data = Parser.formatNewLine(response);
                 out.println(data);
                 out.flush();
                 //Should the option for Writing be chosen, the server will wait for the file data to be written
                 if (request == Privileges.Write && ResponseCode.fromInteger(Integer.parseInt(response[0] )) == ResponseCode.Success) {
 //                    System.out.println("Entering second write phase.");
-                    awaitWriteResponse(out, in, arguments, request, response);
+                    awaitWriteResponse(out, in, arguments, request, response, cert);
                 }
 
             }
@@ -87,7 +89,7 @@ public class Server implements Runnable {
 
 
 
-    private void awaitWriteResponse(PrintWriter out, BufferedReader in, String[] arguments, Privileges request, String[] response) throws IOException {
+    private void awaitWriteResponse(PrintWriter out, BufferedReader in, String[] arguments, Privileges request, String[] response, X509Certificate cert ) throws IOException {
         String clientMsg;
         if ((clientMsg = in.readLine()) != null) {
             System.out.println("Msg: " + clientMsg);
@@ -101,15 +103,15 @@ public class Server implements Runnable {
             	Object[] temp = list.toArray();
             	String [] writeInput = new String[temp.length];
             	for (int i = 0; i < temp.length ; i++) writeInput[i] = temp[i].toString();
-            	out.println(getResponse(writeInput)[0]);
+            	out.println(getResponse(writeInput, cert)[0]);
             	out.flush();
             	//                            break;
             }
         }
     }
 
-    private String[] getResponse(String[] arguments) {
-        return auth.authenticateAndRetrieveData(Privileges.fromInteger(Integer.parseInt(arguments[0])), new Doctor("Doctor 1 (12345678-1234)","Division1"), arguments);
+    private String[] getResponse(String[] arguments, X509Certificate cert) {
+        return auth.authenticateAndRetrieveData(Privileges.fromInteger(Integer.parseInt(arguments[0])), Parser.generateUserFromCert(cert), arguments);
     }
 
     private void newListener() {
