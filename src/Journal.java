@@ -20,6 +20,13 @@ public class Journal {
         this.division = division;
         this.file = file;
     }
+    
+    public String getDoctor(){
+    	return doctor;
+    }
+    public String getNurse(){
+    	return nurse;
+    }
 
     public boolean getAccess(User user, Privileges request) {
         if (!user.hasPrivilege(request)) {
