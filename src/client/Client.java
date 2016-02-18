@@ -58,6 +58,7 @@ public class Client {
 			PrintWriter serverWriter = new PrintWriter(socket.getOutputStream(), true);
 			BufferedReader serverReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			
+			System.out.println("User succesfully authorized. \n(Enter 'help' for a list of available commands)");
 			communicate(inputReader, serverWriter, serverReader);
 			serverReader.close();
 			serverWriter.close();
@@ -114,8 +115,14 @@ public class Client {
 			if (input.equalsIgnoreCase("quit")) {
 				break;
 			}
-			
-			if (input.startsWith(EDIT_COMMAND + " ")) {
+			if (input.equalsIgnoreCase("help")) {
+				System.out.println("Supported commands: \n" + 
+						"read #filename#\n" +
+						"edit #filename#\n" +
+						"create #filename#\n" + 
+						"delete #filename#");
+			}
+			else if (input.startsWith(EDIT_COMMAND + " ")) {
 				input = "0$" + input.substring(EDIT_COMMAND.length()+1); 
 				executeEditCommand(input, serverReader, serverWriter);
 			} else if (input.startsWith(READ_COMMAND + " ")) {
@@ -187,15 +194,14 @@ public class Client {
 
 		System.out.print("Enter patient name: ");
 		String patient = inputReader.readLine();
-		
-		int startIndex = principal.getName().indexOf("CN=") + 3;
-		int endIndex = principal.getName().indexOf(",C=");
-		String doctor = principal.getName().substring(startIndex, endIndex);
-		
 		System.out.print("Enter nurse name: ");
 		String nurse = inputReader.readLine();
 		System.out.print("Enter division name: ");
 		String division = inputReader.readLine();
+		
+		int startIndex = principal.getName().indexOf("CN=") + 3;
+		int endIndex   = principal.getName().indexOf(",C=");
+		String doctor = principal.getName().substring(startIndex, endIndex);
 		
 		String text = "Patient: " + patient + "\n"
 				+ "Doctor: " + doctor + "\n"
@@ -216,8 +222,7 @@ public class Client {
 
 	private void executeListCommand(String input, BufferedReader serverReader,
 			PrintWriter serverWriter) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("Operation not yet supported.");
 	}
 
 	private ResponseCode getResponseCode(String response) {
