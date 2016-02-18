@@ -33,8 +33,11 @@ public class Client {
 	private static final String CREATE_COMMAND = "create";
 	private static final String LIST_COMMAND = "list";
 
+	private TextDialog textDialog;
+	
 	public Client(String host, int port)
 	{
+		textDialog = new TextDialog();
 		try {
 			BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
 			
@@ -143,8 +146,9 @@ public class Client {
 		ResponseCode responseCode = getResponseCode(response);
 		
 		if (responseCode == ResponseCode.Success) {
-			System.out.println(response.substring(2).replace('$', '\n'));
-			serverWriter.println(response.substring(2) + "\\(^-^)/");
+			String editedText = textDialog.show(response.substring(2).replace('$', '\n'),true);
+			
+			serverWriter.println(editedText.replaceAll("\\r?\\n", "\\$"));
 			serverWriter.flush();
 
 			response = serverReader.readLine();
@@ -162,7 +166,7 @@ public class Client {
 		ResponseCode responseCode = getResponseCode(response);
 		
 		if (responseCode == ResponseCode.Success) {
-			System.out.println(response.substring(2).replace('$', '\n'));
+			textDialog.show(response.substring(2).replace('$', '\n'),false);
 		} else {
 			printResponseCode(responseCode);
 		}
