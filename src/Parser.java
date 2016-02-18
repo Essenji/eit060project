@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.Arrays;
+import javax.security.cert.X509Certificate;
 
 /**
  * Created by Tank on 2/11/2016.
@@ -46,6 +47,21 @@ public class Parser {
         data = Parser.arrayToString(response).toString();
         return data;
     }
+    
+//    public static User generateUserFromCert(X509Certificate cert){
+//    	User user;
+//    	String name = cert.getSubjectDN().getName();
+//    	cert.
+//    	switch (cert.getIssuerDN().getName()){
+//    		case "Doctors":
+////    			user = new Doctor(name, )
+//    		case "Nurses":
+//    		case "Government":
+//    		case "Patients":
+//    	}
+    	
+//    }
+    
     public static boolean printToFile(String[] filedata) {
         try {
             PrintWriter pw = new PrintWriter(new File(Variables.JOURNAL_FOLDER + filedata[0]));

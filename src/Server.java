@@ -1,6 +1,9 @@
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.*;
 import javax.security.cert.X509Certificate;
+
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.security.KeyStore;
@@ -152,7 +155,7 @@ public class Server implements Runnable {
                 KeyStore ks = KeyStore.getInstance("JKS");
                 KeyStore ts = KeyStore.getInstance("JKS");
                 char[] password = "password".toCharArray();
-
+                System.out.println( (new File("test").getAbsolutePath()));
                 ks.load(new FileInputStream("serverkeystore"), password);  // keystore password (storepass)
                 ts.load(new FileInputStream("servertruststore"), password); // truststore password (storepass)
                 kmf.init(ks, password); // certificate password (keypass)
