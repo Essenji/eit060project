@@ -45,7 +45,7 @@ public class Client {
 			char[] password = "password".toCharArray();
 			
 			System.out.println("Enter keystore path:");
-			certificateName = inputReader.readLine();
+			certificateName = "certificates/doctors/doctor1keystore";//inputReader.readLine();
 
 			System.out.println("Enter keystore password:");
 			password = inputReader.readLine().toCharArray();
@@ -117,19 +117,19 @@ public class Client {
 			}
 			
 			if (input.startsWith(WRITE_COMMAND + " ")) {
-				input = "0" + input.substring(WRITE_COMMAND.length()+1); 
+				input = "0$" + input.substring(WRITE_COMMAND.length()+1); 
 				excecuteWriteCommand(input, serverReader, serverWriter);
 			} else if (input.startsWith(READ_COMMAND + " ")) {
-				input = "1" + input.substring(READ_COMMAND.length()+1); 
+				input = "1$" + input.substring(READ_COMMAND.length()+1); 
 				excecuteReadCommand(input, serverReader, serverWriter);
 			} else if (input.startsWith(DELETE_COMMAND + " ")) {
-				input = "2" + input.substring(DELETE_COMMAND.length()+1); 
+				input = "2$" + input.substring(DELETE_COMMAND.length()+1); 
 				excecuteDeleteCommand(input, serverReader, serverWriter);
 			} else if (input.startsWith(CREATE_COMMAND + " ")) {
-				input = "3" + input.substring(CREATE_COMMAND.length()+1); 
+				input = "3$" + input.substring(CREATE_COMMAND.length()+1); 
 				excecuteCreateCommand(input, serverReader, serverWriter);
 			} else if (input.startsWith(LIST_COMMAND + " ")) {
-				input = "4" + input.substring(LIST_COMMAND.length()+1); 
+				input = "4$" + input.substring(LIST_COMMAND.length()+1); 
 				excecuteListCommand(input, serverReader, serverWriter);
 			} else {
 				System.out.println("Unknown command: " + input);
@@ -158,15 +158,6 @@ public class Client {
 		} else {
 			printErrorCode(responseCode);
 		}
-//			int length = (serverReader.read() << 16) + serverReader.read();
-//			char[] data = new char[length];
-//			int read = 0;
-//			while (read < length) {
-//				read += serverReader.read(data, read, length-read);
-//			}
-//			String text = new String(data);
-//			System.out.println(text); //TODO: maybe show in editor.
-//		}
 	}
 
 	private void excecuteDeleteCommand(String input, BufferedReader serverReader,

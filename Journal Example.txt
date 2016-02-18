@@ -2,6 +2,5 @@ Patient: Name Surname
 Doctor: Dr. Alice Bob
 Nurse: Generic nurse 12
 Division: can be omitted?
-
-data data
-multiple lines of data
+Data: data
+multiple lines of data?
