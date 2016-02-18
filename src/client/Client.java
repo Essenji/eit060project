@@ -16,6 +16,8 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 import javax.security.cert.X509Certificate;
 
+import util.ResponseCode;
+
 /*
  * This example shows how to set up a key manager to perform client
  * authentication.
@@ -147,18 +149,24 @@ public class Client {
 		serverWriter.println(input);
 		serverWriter.flush();
 
-		int answer = serverReader.read();
+		String response = serverReader.readLine();
 		
-		if (answer == SUCCESS_RETURN_VALUE) {
-			int length = (serverReader.read() << 16) + serverReader.read();
-			char[] data = new char[length];
-			int read = 0;
-			while (read < length) {
-				read += serverReader.read(data, read, length-read);
-			}
-			String text = new String(data);
-			System.out.println(text); //TODO: maybe show in editor.
+		ResponseCode responseCode = ResponseCode.fromInteger(Integer.parseInt(response.substring(0, 1)));
+		
+		if (responseCode == ResponseCode.Success) {
+			System.out.println(response.substring(2).replace('$', '\n'));
+		} else {
+			printErrorCode(responseCode);
 		}
+//			int length = (serverReader.read() << 16) + serverReader.read();
+//			char[] data = new char[length];
+//			int read = 0;
+//			while (read < length) {
+//				read += serverReader.read(data, read, length-read);
+//			}
+//			String text = new String(data);
+//			System.out.println(text); //TODO: maybe show in editor.
+//		}
 	}
 
 	private void excecuteDeleteCommand(String input, BufferedReader serverReader,
@@ -177,6 +185,22 @@ public class Client {
 			PrintWriter serverWriter) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	private void printErrorCode(ResponseCode responseCode) {
+		switch (responseCode) {
+		case Failure:
+			System.out.println("Operation failed: access denied");
+			break;
+		case FileNotCreated:
+			System.out.println("Operation failed: could not create file");
+			break;
+		case FileNotFound:
+			System.out.println("Operation failed: file not found");
+			break;
+		default:
+			System.out.println("Operation failed: unknown response");
+		}
 	}
 
 	public static void main(String[] args) throws Exception 
