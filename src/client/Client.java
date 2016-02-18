@@ -211,6 +211,7 @@ public class Client {
 		serverWriter.flush();
 
 		String response = serverReader.readLine();
+		response = serverReader.readLine();
 		ResponseCode responseCode = getResponseCode(response);
 		
 		printResponseCode(responseCode);
