@@ -6,17 +6,17 @@ import java.util.Arrays;
  */
 public class Parser {
     public static String[] parseLine(String filename){
-                return filename.split("\\r?\\n?\\s");
+                return filename.split("\\$");
         }
 
-    public static StringBuilder getJournalList() {
-        StringBuilder sb = new StringBuilder();
-        File temp = new File(Variables.JOURNAL_FOLDER);
-        for (File f : temp.listFiles()) {
-            sb.append(f.getName() + "\n");
-        }
-        return sb;
-    }
+//    public static StringBuilder getJournalList() {
+//        StringBuilder sb = new StringBuilder();
+//        File temp = new File(Variables.JOURNAL_FOLDER);
+//        for (File f : temp.listFiles()) {
+//            sb.append(f.getName() + "\n");
+//        }
+//        return sb;
+//    }
     public static StringBuilder arrayToString(String[] array){
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < array.length; i++) {
