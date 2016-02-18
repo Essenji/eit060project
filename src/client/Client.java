@@ -47,7 +47,7 @@ public class Client {
 			char[] password = "password".toCharArray();
 			
 			System.out.println("Enter keystore path:");
-			certificateName = "certificates/doctors/doctor1keystore";//inputReader.readLine();
+			certificateName = inputReader.readLine();
 
 			System.out.println("Enter keystore password:");
 			password = inputReader.readLine().toCharArray();
