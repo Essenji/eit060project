@@ -112,6 +112,6 @@ public class Authenticator {
         } catch (FileNotFoundException e) {
             return Authenticator.FileNotFound;
         }
-        return new String[]{ResponseCode.Success.toString(), String.valueOf(j.length()), data};
+        return new String[]{ResponseCode.Success.toString(), data};
     }
 }

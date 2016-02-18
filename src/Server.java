@@ -95,15 +95,13 @@ public class Server implements Runnable {
             if (ResponseCode.fromInteger(Integer.parseInt(response[0])) == ResponseCode.Success) {
             	String filename = arguments[1];
             	arguments = Parser.parseLine(clientMsg);
+            	
             	List<String> list = new ArrayList<String>(Arrays.asList(arguments));
             	list.add(0, filename);
             	list.add(0, request.toString());
-            	Object[] temp = list.toArray();
-            	String [] writeInput = new String[temp.length];
-            	for (int i = 0; i < temp.length ; i++) writeInput[i] = temp[i].toString();
+            	String[] writeInput = list.toArray(new String[list.size()]);
             	out.println(getResponse(writeInput)[0]);
             	out.flush();
-            	//                            break;
             }
         }
     }
