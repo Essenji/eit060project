@@ -44,7 +44,7 @@ public class Parser {
     public static String formatNewLine(String[] response) {
         String data;
         for (int i = 0; i < response.length; i++) {
-            response[i] = response[i].replaceAll("\\r?\\n?\\s", " ").trim();
+            response[i] = response[i].replaceAll("\\r?\\n", "\\$").trim();
         }
         data = Parser.arrayToString(response).toString();
         return data;
