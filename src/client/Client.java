@@ -117,26 +117,26 @@ public class Client {
 			
 			if (input.startsWith(EDIT_COMMAND + " ")) {
 				input = "0$" + input.substring(EDIT_COMMAND.length()+1); 
-				excecuteEditCommand(input, serverReader, serverWriter);
+				executeEditCommand(input, serverReader, serverWriter);
 			} else if (input.startsWith(READ_COMMAND + " ")) {
 				input = "1$" + input.substring(READ_COMMAND.length()+1); 
-				excecuteReadCommand(input, serverReader, serverWriter);
+				executeReadCommand(input, serverReader, serverWriter);
 			} else if (input.startsWith(DELETE_COMMAND + " ")) {
 				input = "2$" + input.substring(DELETE_COMMAND.length()+1); 
-				excecuteDeleteCommand(input, serverReader, serverWriter);
+				executeDeleteCommand(input, serverReader, serverWriter);
 			} else if (input.startsWith(CREATE_COMMAND)) {
 				input = "3$" + input.substring(CREATE_COMMAND.length()+1); 
-				excecuteCreateCommand(input, inputReader, serverReader, serverWriter);
+				executeCreateCommand(input, inputReader, serverReader, serverWriter);
 			} else if (input.startsWith(LIST_COMMAND + " ")) {
 				input = "4$" + input.substring(LIST_COMMAND.length()+1); 
-				excecuteListCommand(input, serverReader, serverWriter);
+				executeListCommand(input, serverReader, serverWriter);
 			} else {
 				System.out.println("Unknown command: " + input);
 			}
 		}
 	}
 	
-	private void excecuteEditCommand(String input, BufferedReader serverReader,
+	private void executeEditCommand(String input, BufferedReader serverReader,
 			PrintWriter serverWriter) throws IOException {
 		serverWriter.println(input);
 		serverWriter.flush();
@@ -156,7 +156,7 @@ public class Client {
 		printResponseCode(responseCode);
 	}
 
-	private void excecuteReadCommand(String input, BufferedReader serverReader,
+	private void executeReadCommand(String input, BufferedReader serverReader,
 			PrintWriter serverWriter) throws IOException {
 		serverWriter.println(input);
 		serverWriter.flush();
@@ -171,7 +171,7 @@ public class Client {
 		}
 	}
 
-	private void excecuteDeleteCommand(String input, BufferedReader serverReader,
+	private void executeDeleteCommand(String input, BufferedReader serverReader,
 			PrintWriter serverWriter) throws IOException {
 		serverWriter.println(input);
 		serverWriter.flush();
@@ -182,7 +182,7 @@ public class Client {
 		printResponseCode(responseCode);
 	}
 
-	private void excecuteCreateCommand(String input, BufferedReader inputReader, 
+	private void executeCreateCommand(String input, BufferedReader inputReader, 
 			BufferedReader serverReader, PrintWriter serverWriter) throws IOException {
 
 		System.out.print("Enter patient name: ");
@@ -214,7 +214,7 @@ public class Client {
 		printResponseCode(responseCode);
 	}
 
-	private void excecuteListCommand(String input, BufferedReader serverReader,
+	private void executeListCommand(String input, BufferedReader serverReader,
 			PrintWriter serverWriter) {
 		// TODO Auto-generated method stub
 		
