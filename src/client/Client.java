@@ -14,7 +14,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
-import javax.security.cert.X509Certificate;
+import javax.security.auth.x500.X500Principal;
 
 import util.ResponseCode;
 
@@ -34,6 +34,8 @@ public class Client {
 	private static final String LIST_COMMAND = "list";
 
 	private TextDialog textDialog;
+	private X500Principal principal;
+	
 	
 	public Client(String host, int port)
 	{
@@ -98,9 +100,7 @@ public class Client {
 		socket.startHandshake();
 
 		SSLSession session = socket.getSession();
-		X509Certificate cert = (X509Certificate) session.getPeerCertificateChain()[0];
-		String subject = cert.getSubjectDN().getName();
-		System.out.println("Server CN: " + subject);
+		principal = (X500Principal) session.getLocalPrincipal();
 		return socket;
 	}
 
@@ -124,7 +124,7 @@ public class Client {
 			} else if (input.startsWith(DELETE_COMMAND + " ")) {
 				input = "2$" + input.substring(DELETE_COMMAND.length()+1); 
 				excecuteDeleteCommand(input, serverReader, serverWriter);
-			} else if (input.startsWith(CREATE_COMMAND + " ")) {
+			} else if (input.startsWith(CREATE_COMMAND)) {
 				input = "3$" + input.substring(CREATE_COMMAND.length()+1); 
 				excecuteCreateCommand(input, inputReader, serverReader, serverWriter);
 			} else if (input.startsWith(LIST_COMMAND + " ")) {
@@ -189,8 +189,11 @@ public class Client {
 
 		System.out.print("Enter patient name: ");
 		String patient = inputReader.readLine();
-		System.out.print("Enter doctor name: ");
-		String doctor = inputReader.readLine();
+		
+		int startIndex = principal.getName().indexOf("CN=") + 3;
+		int endIndex = principal.getName().indexOf(",C=");
+		String doctor = principal.getName().substring(startIndex, endIndex);
+		
 		System.out.print("Enter nurse name: ");
 		String nurse = inputReader.readLine();
 		System.out.print("Enter division name: ");
@@ -204,7 +207,7 @@ public class Client {
 		
 		String editedText = textDialog.show(text,true);
 		
-		serverWriter.println(input + patient + "$" + editedText.replaceAll("\\r?\\n", "\\$"));
+		serverWriter.println(input + "$" + editedText.replaceAll("\\r?\\n", "\\$"));
 		serverWriter.flush();
 
 		String response = serverReader.readLine();
