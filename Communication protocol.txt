@@ -1,7 +1,7 @@
 
 Kommando från klienten
 
-Write:  0 #filnamn# \n  -->  #svarskod# #filens innehåll med $ istället för newline#  --> #filens innehåll med $ istället för newline#
+Write:  0 #filnamn# \n  -->  #svarskod# #filens innehåll med $ istället för newline#  -->  #filens innehåll med $ istället för newline#  -->  #svarskod#
 Read:   1 #filnamn# \n  -->  #svarskod# #filens innehåll med $ istället för newline#
 Delete: 2 #filnamn# \n  -->  #svarskod#
 Create: 3 #filnamn#$#patient#$#nurse#$#division#$#filens innehåll med $ istället för newline#\n  -->  #svarskod#

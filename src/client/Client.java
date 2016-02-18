@@ -33,8 +33,11 @@ public class Client {
 	private static final String CREATE_COMMAND = "create";
 	private static final String LIST_COMMAND = "list";
 
+	private TextDialog textDialog;
+	
 	public Client(String host, int port)
 	{
+		textDialog = new TextDialog();
 		try {
 			BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
 			
@@ -140,16 +143,18 @@ public class Client {
 		serverWriter.flush();
 
 		String response = serverReader.readLine();
-		
-		ResponseCode responseCode = ResponseCode.fromInteger(Integer.parseInt(response.substring(0, 1)));
+		ResponseCode responseCode = getResponseCode(response);
 		
 		if (responseCode == ResponseCode.Success) {
-			System.out.println(response.substring(2).replace('$', '\n'));
-			serverWriter.println(response.substring(2) + "\\(^-^)/");
-		} else {
-			printErrorCode(responseCode);
+			String editedText = textDialog.show(response.substring(2).replace('$', '\n'),true);
+			
+			serverWriter.println(editedText.replaceAll("\\r?\\n", "\\$"));
+			serverWriter.flush();
+
+			response = serverReader.readLine();
+			responseCode = getResponseCode(response);
 		}
-		
+		printResponseCode(responseCode);
 	}
 
 	private void excecuteReadCommand(String input, BufferedReader serverReader,
@@ -158,14 +163,18 @@ public class Client {
 		serverWriter.flush();
 
 		String response = serverReader.readLine();
-		
-		ResponseCode responseCode = ResponseCode.fromInteger(Integer.parseInt(response.substring(0, 1)));
+		ResponseCode responseCode = getResponseCode(response);
 		
 		if (responseCode == ResponseCode.Success) {
-			System.out.println(response.substring(2).replace('$', '\n'));
+			textDialog.show(response.substring(2).replace('$', '\n'),false);
 		} else {
-			printErrorCode(responseCode);
+			printResponseCode(responseCode);
 		}
+	}
+
+	private ResponseCode getResponseCode(String response) {
+		ResponseCode responseCode = ResponseCode.fromInteger(Integer.parseInt(response.substring(0, 1)));
+		return responseCode;
 	}
 
 	private void excecuteDeleteCommand(String input, BufferedReader serverReader,
@@ -186,7 +195,7 @@ public class Client {
 		
 	}
 
-	private void printErrorCode(ResponseCode responseCode) {
+	private void printResponseCode(ResponseCode responseCode) {
 		switch (responseCode) {
 		case Failure:
 			System.out.println("Operation failed: access denied");
@@ -196,6 +205,9 @@ public class Client {
 			break;
 		case FileNotFound:
 			System.out.println("Operation failed: file not found");
+			break;
+		case Success:
+			System.out.println("Operation successful!");
 			break;
 		default:
 			System.out.println("Operation failed: unknown response");

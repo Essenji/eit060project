@@ -32,8 +32,8 @@ public class Parser {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; (i <array.length && i < Variables.FIELDS.length) ; i++) {
             if(i < Variables.FIELDS.length-1){
-            sb.append(Variables.FIELDS[i] + " "+ array[i] + "\n");}
-            else sb.append(Variables.FIELDS[i] + " "+ array[i]+ " ");
+            sb.append(array[i] + "\n");}
+            else sb.append(array[i]+ " ");
 
         }
         for (int i = Variables.FIELDS.length; i < array.length; i++) {
