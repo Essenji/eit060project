@@ -1,10 +1,10 @@
 
 Kommando från klienten
 
-Write:  0 #filnamn# \n  -->  #svarskod# #filens längd (int)#  #filens innehåll#  -->  #ny längd på filen (int)# #filens innehåll#
-Read:   1 #filnamn# \n  -->  #svarskod# #filens längd (int)#  #filens innehåll#
+Write:  0 #filnamn# \n  -->  #svarskod# #filens innehåll med $ istället för newline#  --> #filens innehåll med $ istället för newline#
+Read:   1 #filnamn# \n  -->  #svarskod# #filens innehåll med $ istället för newline#
 Delete: 2 #filnamn# \n  -->  #svarskod#
-Create: 3 #filnamn# \n #filens längd (int)#  #filens innehåll#  -->  #svarskod#
+Create: 3 #filnamn#$#patient#$#nurse#$#division#$#filens innehåll med $ istället för newline#\n  -->  #svarskod#
 List:   4  -->  #svarskod# #längd på lista# #lista där varje element är separerat med ny rad#
 
 Svarskoder:
