@@ -39,7 +39,12 @@ public class Server implements Runnable {
 			X509Certificate cert = (X509Certificate) session.getPeerCertificateChain()[0];
 			numConnectedClients++;
 			System.out.println("client connected: " + numConnectedClients + " concurrent connection(s)");
-
+			
+			int startIndex = cert.getSubjectDN().getName().indexOf("CN=") + 3;
+			int endIndex   = cert.getSubjectDN().getName().indexOf(", C=");
+			String name = cert.getSubjectDN().getName().substring(startIndex, endIndex);
+			Logger.getLogger().auditConnection(name, ResponseCode.Success);
+			
 			PrintWriter out = null;
 			BufferedReader in = null;
 			out = new PrintWriter(socket.getOutputStream(), true);
@@ -59,6 +64,9 @@ public class Server implements Runnable {
 				String[] response = getResponse(arguments, cert);
 
 				String data = Parser.formatNewLine(response);
+				
+				Logger.getLogger().auditAction(name, arguments[1], request, 
+						ResponseCode.fromInteger(Integer.parseInt(response[0])));
 				out.println(data);
 				out.flush();
 				// Should the option for Writing be chosen, the server will wait
@@ -74,6 +82,9 @@ public class Server implements Runnable {
 			out.close();
 			socket.close();
 			numConnectedClients--;
+			
+			Logger.getLogger().auditDisconnection(name);
+			
 			System.out.println("client disconnected");
 			System.out.println(numConnectedClients + " concurrent connection(s)\n");
 		} catch (IOException e) {
