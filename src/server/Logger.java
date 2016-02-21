@@ -20,7 +20,7 @@ public class Logger {
 	public Logger(String outputPath) {
 		outputFile = new File(outputPath);
 		try {
-			writer = new BufferedWriter(new FileWriter(outputFile));
+			writer = new BufferedWriter(new FileWriter(outputFile,true));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -28,9 +28,9 @@ public class Logger {
 	
 	public void auditConnection(String clientName, ResponseCode code) throws IOException {
 		if (code == ResponseCode.Success)
-			writer.append(getTimestamp() + "Client \""+ clientName +"\" successfully connected\n");
+			writer.write(getTimestamp() + "Client \""+ clientName +"\" successfully connected\n");
 		else if (code == ResponseCode.Failure)
-			writer.append(getTimestamp() + "Client \""+ clientName +"\" tried to connect but failed authentication\n");
+			writer.write(getTimestamp() + "Client \""+ clientName +"\" tried to connect but failed authentication\n");
 		writer.flush();
 	}
 
@@ -69,24 +69,24 @@ public class Logger {
     	action = "created";
     	break;
     case List:
-    	writer.append(getTimestamp() + "Client \""+ clientName 
+    	writer.write(getTimestamp() + "Client \""+ clientName 
     			+ "\" listed files" + result + "\n");
     	writer.flush();
     	return;
     default:
-    	writer.append(getTimestamp() + "Client \""+ clientName 
+    	writer.write(getTimestamp() + "Client \""+ clientName 
     			+ "\" performed unknown action"+ result + "\n");
     	writer.flush();
     	return;
 		}
 		
-  	writer.append(getTimestamp() + "Client \""+ clientName +"\" " + action 
+  	writer.write(getTimestamp() + "Client \""+ clientName +"\" " + action 
   			+ " file \"" + fileName + "\" "+ result + "\n");
 		writer.flush();
 	}
 	
 	public void auditDisconnection(String name) throws IOException {
-		writer.append(getTimestamp() + "Client \"" + name + "\" disconnected");
+		writer.write(getTimestamp() + "Client \"" + name + "\" disconnected");
 		writer.flush();
 	}
 
