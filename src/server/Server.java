@@ -39,6 +39,7 @@ public class Server implements Runnable {
 			X509Certificate cert = (X509Certificate) session.getPeerCertificateChain()[0];
 			numConnectedClients++;
 			System.out.println("client connected: " + numConnectedClients + " concurrent connection(s)");
+			System.out.println("Cipher suite: " + session.getCipherSuite());
 
 			PrintWriter out = null;
 			BufferedReader in = null;
