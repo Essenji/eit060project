@@ -59,11 +59,11 @@ public class Server implements Runnable {
 			String clientMsg = null;
 			while ((clientMsg = in.readLine()) != null) {
 				String[] arguments = Parser.parseLine(clientMsg);
+				
+				//TODO: ontrollera att det faktiskt är rätt input som kommer in och att den är på rätt format så att servern inte kraschar!
+				
 				Privileges request = Privileges.fromInteger(Integer.parseInt(arguments[0]));
-				// TODO: Get user data from Clientside corretly.
-				// TODO: From here it is assumed that the user has been
-				// correctly verified through certificate
-				// StringBuilder sb = new StringBuilder();
+				
 				if (request == Privileges.Write) {
 					arguments[0] = Privileges.Read.toString();
 				}
