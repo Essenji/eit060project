@@ -37,13 +37,19 @@ public class Server implements Runnable {
 			newListener();
 			SSLSession session = socket.getSession();
 			X509Certificate cert = (X509Certificate) session.getPeerCertificateChain()[0];
-			numConnectedClients++;
-			System.out.println("client connected: " + numConnectedClients + " concurrent connection(s)");
 			
 			int startIndex = cert.getSubjectDN().getName().indexOf("CN=") + 3;
 			int endIndex   = cert.getSubjectDN().getName().indexOf(", C=");
 			String name = cert.getSubjectDN().getName().substring(startIndex, endIndex);
+			
+			if (session.getPeerCertificateChain().length != 3) {
+				Logger.getLogger().auditConnection(name, ResponseCode.Failure);
+				return;
+			}
 			Logger.getLogger().auditConnection(name, ResponseCode.Success);
+
+			numConnectedClients++;
+			System.out.println("client connected: " + numConnectedClients + " concurrent connection(s)");
 			
 			PrintWriter out = null;
 			BufferedReader in = null;
