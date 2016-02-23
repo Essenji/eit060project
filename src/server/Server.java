@@ -44,6 +44,7 @@ public class Server implements Runnable {
 			
 			if (session.getPeerCertificateChain().length != 3) {
 				Logger.getLogger().auditConnection(name, ResponseCode.Failure);
+				socket.close();
 				return;
 			}
 			Logger.getLogger().auditConnection(name, ResponseCode.Success);
