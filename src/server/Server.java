@@ -37,10 +37,21 @@ public class Server implements Runnable {
 			newListener();
 			SSLSession session = socket.getSession();
 			X509Certificate cert = (X509Certificate) session.getPeerCertificateChain()[0];
+			
+			int startIndex = cert.getSubjectDN().getName().indexOf("CN=") + 3;
+			int endIndex   = cert.getSubjectDN().getName().indexOf(", C=");
+			String name = cert.getSubjectDN().getName().substring(startIndex, endIndex);
+			
+			if (session.getPeerCertificateChain().length != 3) {
+				Logger.getLogger().auditConnection(name, ResponseCode.Failure);
+				return;
+			}
+			Logger.getLogger().auditConnection(name, ResponseCode.Success);
+
 			numConnectedClients++;
 			System.out.println("client connected: " + numConnectedClients + " concurrent connection(s)");
 			System.out.println("Cipher suite: " + session.getCipherSuite());
-
+			
 			PrintWriter out = null;
 			BufferedReader in = null;
 			out = new PrintWriter(socket.getOutputStream(), true);
@@ -49,17 +60,20 @@ public class Server implements Runnable {
 			String clientMsg = null;
 			while ((clientMsg = in.readLine()) != null) {
 				String[] arguments = Parser.parseLine(clientMsg);
+				
+				//TODO: ontrollera att det faktiskt är rätt input som kommer in och att den är på rätt format så att servern inte kraschar!
+				
 				Privileges request = Privileges.fromInteger(Integer.parseInt(arguments[0]));
-				// TODO: Get user data from Clientside corretly.
-				// TODO: From here it is assumed that the user has been
-				// correctly verified through certificate
-				// StringBuilder sb = new StringBuilder();
+				
 				if (request == Privileges.Write) {
 					arguments[0] = Privileges.Read.toString();
 				}
 				String[] response = getResponse(arguments, cert);
 
 				String data = Parser.formatNewLine(response);
+				
+				Logger.getLogger().auditAction(name, arguments[1], request, 
+						ResponseCode.fromInteger(Integer.parseInt(response[0])));
 				out.println(data);
 				out.flush();
 				// Should the option for Writing be chosen, the server will wait
@@ -75,6 +89,9 @@ public class Server implements Runnable {
 			out.close();
 			socket.close();
 			numConnectedClients--;
+			
+			Logger.getLogger().auditDisconnection(name);
+			
 			System.out.println("client disconnected");
 			System.out.println(numConnectedClients + " concurrent connection(s)\n");
 		} catch (IOException e) {
