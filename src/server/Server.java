@@ -62,9 +62,23 @@ public class Server implements Runnable {
 			while ((clientMsg = in.readLine()) != null) {
 				String[] arguments = Parser.parseLine(clientMsg);
 				
-				//TODO: ontrollera att det faktiskt är rätt input som kommer in och att den är på rätt format så att servern inte kraschar!
+				//TODO: kontrollera att det faktiskt är rätt input som kommer in och att den är på rätt format så att servern inte kraschar!
 				
-				Privileges request = Privileges.fromInteger(Integer.parseInt(arguments[0]));
+				if (arguments.length < 2) {
+					String data = Parser.formatNewLine(Authenticator.Failure);
+					sendResponse(name, out, null, Privileges.Unknown, data);
+					continue;
+				}
+				
+				Privileges request = null;
+				try {
+					request = Privileges.fromInteger(Integer.parseInt(arguments[0]));
+					
+				} catch (NumberFormatException e) {
+					String data = Parser.formatNewLine(Authenticator.Failure);
+					sendResponse(name, out, arguments[1], Privileges.Unknown, data);
+					continue;
+				}
 				
 				if (request == Privileges.Write) {
 					arguments[0] = Privileges.Read.toString();
@@ -73,10 +87,7 @@ public class Server implements Runnable {
 
 				String data = Parser.formatNewLine(response);
 				
-				Logger.getLogger().auditAction(name, arguments[1], request, 
-						ResponseCode.fromInteger(Integer.parseInt(response[0])));
-				out.println(data);
-				out.flush();
+				sendResponse(name, out, arguments[1], request, data);
 				// Should the option for Writing be chosen, the server will wait
 				// for the file data to be written
 				if (request == Privileges.Write
@@ -100,6 +111,13 @@ public class Server implements Runnable {
 			e.printStackTrace();
 			return;
 		}
+	}
+
+	private void sendResponse(String clientName, PrintWriter out, String fileName,
+			Privileges request, String data) throws IOException {
+		Logger.getLogger().auditAction(clientName, fileName, request, ResponseCode.Failure);
+		out.println(data);
+		out.flush();
 	}
 
 	private void awaitWriteResponse(PrintWriter out, BufferedReader in, String[] arguments, Privileges request,

@@ -73,6 +73,7 @@ public class Logger {
     			+ "\" listed files" + result + "\n");
     	writer.flush();
     	return;
+    case Unknown:
     default:
     	writer.write(getTimestamp() + "Client \""+ clientName 
     			+ "\" performed unknown action"+ result + "\n");

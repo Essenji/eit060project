@@ -1,7 +1,7 @@
 package util;
 
 public enum Privileges {
-    Write, Read, Delete, Create, List;
+    Write, Read, Delete, Create, List, Unknown;
 
     public static Privileges fromInteger(int x) {
         switch (x) {
