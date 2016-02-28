@@ -1,0 +1,8 @@
+Patient: patient
+Doctor: Doctor 1 (12345678-1234)
+Nurse: nurse
+Division: div
+Data: enter patient data here
+
+ 
+

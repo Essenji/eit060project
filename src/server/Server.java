@@ -62,8 +62,6 @@ public class Server implements Runnable {
 			while ((clientMsg = in.readLine()) != null) {
 				String[] arguments = Parser.parseLine(clientMsg);
 				
-				//TODO: kontrollera att det faktiskt är rätt input som kommer in och att den är på rätt format så att servern inte kraschar!
-				
 				if (arguments.length < 2) {
 					String data = Parser.formatNewLine(Authenticator.Failure);
 					sendResponse(name, out, null, Privileges.Unknown, data);
@@ -95,6 +93,8 @@ public class Server implements Runnable {
 					// System.out.println("Entering second write phase.");
 					awaitWriteResponse(out, in, arguments, request, response, cert);
 				}
+//				Logger.getLogger().auditAction(name, arguments[1], request, 
+//						ResponseCode.fromInteger(Integer.parseInt(response[0])));
 
 			}
 			in.close();
@@ -133,9 +133,9 @@ public class Server implements Runnable {
 				List<String> list = new ArrayList<String>(Arrays.asList(arguments));
 				list.add(0, filename);
 				list.add(0, request.toString());
-
 				String[] writeInput = list.toArray(new String[list.size()]);
-				out.println(getResponse(writeInput, cert)[0]);
+				response[0] = getResponse(writeInput, cert)[0];
+				out.println(response[0]);
 				out.flush();
 			}
 		}
