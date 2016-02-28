@@ -73,8 +73,7 @@ public class Server implements Runnable {
 
 				String data = Parser.formatNewLine(response);
 				
-				Logger.getLogger().auditAction(name, arguments[1], request, 
-						ResponseCode.fromInteger(Integer.parseInt(response[0])));
+	
 				out.println(data);
 				out.flush();
 				// Should the option for Writing be chosen, the server will wait
@@ -84,6 +83,8 @@ public class Server implements Runnable {
 					// System.out.println("Entering second write phase.");
 					awaitWriteResponse(out, in, arguments, request, response, cert);
 				}
+				Logger.getLogger().auditAction(name, arguments[1], request, 
+						ResponseCode.fromInteger(Integer.parseInt(response[0])));
 
 			}
 			in.close();
@@ -115,9 +116,9 @@ public class Server implements Runnable {
 				List<String> list = new ArrayList<String>(Arrays.asList(arguments));
 				list.add(0, filename);
 				list.add(0, request.toString());
-
 				String[] writeInput = list.toArray(new String[list.size()]);
-				out.println(getResponse(writeInput, cert)[0]);
+				response[0] = getResponse(writeInput, cert)[0];
+				out.println(response[0]);
 				out.flush();
 			}
 		}
