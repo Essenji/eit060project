@@ -64,7 +64,7 @@ public class Server implements Runnable {
 				
 				if (arguments.length < 2) {
 					String data = Parser.formatNewLine(Authenticator.Failure);
-					sendResponse(name, out, null, Privileges.Unknown, data);
+					sendResponse(name, out, null, Privileges.Unknown, data, ResponseCode.Failure);
 					continue;
 				}
 				
@@ -74,7 +74,7 @@ public class Server implements Runnable {
 					
 				} catch (NumberFormatException e) {
 					String data = Parser.formatNewLine(Authenticator.Failure);
-					sendResponse(name, out, arguments[1], Privileges.Unknown, data);
+					sendResponse(name, out, arguments[1], Privileges.Unknown, data, ResponseCode.Failure);
 					continue;
 				}
 				
@@ -85,11 +85,12 @@ public class Server implements Runnable {
 
 				String data = Parser.formatNewLine(response);
 				
-				sendResponse(name, out, arguments[1], request, data);
+				ResponseCode responseCode = ResponseCode.fromInteger(Integer.parseInt(response[0]));
+				sendResponse(name, out, arguments[1], request, data, responseCode);
 				// Should the option for Writing be chosen, the server will wait
 				// for the file data to be written
 				if (request == Privileges.Write
-						&& ResponseCode.fromInteger(Integer.parseInt(response[0])) == ResponseCode.Success) {
+						&& responseCode == ResponseCode.Success) {
 					// System.out.println("Entering second write phase.");
 					awaitWriteResponse(out, in, arguments, request, response, cert);
 				}
@@ -114,8 +115,8 @@ public class Server implements Runnable {
 	}
 
 	private void sendResponse(String clientName, PrintWriter out, String fileName,
-			Privileges request, String data) throws IOException {
-		Logger.getLogger().auditAction(clientName, fileName, request, ResponseCode.Failure);
+			Privileges request, String data, ResponseCode code) throws IOException {
+		Logger.getLogger().auditAction(clientName, fileName, request, code);
 		out.println(data);
 		out.flush();
 	}
