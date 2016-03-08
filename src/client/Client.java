@@ -1,5 +1,6 @@
 package client;
 import java.io.BufferedReader;
+import java.io.Console;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -50,7 +51,7 @@ public class Client {
 			certificateName = inputReader.readLine();
 
 			System.out.println("Enter keystore password:");
-			password = inputReader.readLine().toCharArray();
+			password = getPassword(inputReader);
 			
 			SSLSocketFactory factory = setupCertificates(certificateName,password);
 			SSLSocket socket = setupSocket(host, port, factory);
@@ -67,6 +68,18 @@ public class Client {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public char[] getPassword(BufferedReader inputReader) throws IOException {
+		Console console = System.console();
+		if (console != null)
+		{
+			return console.readPassword();
+		}
+
+		char[] password;
+		password = inputReader.readLine().toCharArray();
+		return password;
 	}
 
 	private SSLSocketFactory setupCertificates(String keystoreName, char[] password) throws IOException {
